@@ -1,0 +1,72 @@
+<!-- Sidebar Navigation Partial -->
+<nav id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <i class="bi bi-mortarboard-fill brand-icon"></i>
+      <span class="brand-text">SmartQGen</span>
+    </div>
+    <button class="sidebar-toggle d-md-none" id="sidebarClose">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="user-avatar">
+      <i class="bi bi-person-circle"></i>
+    </div>
+    <div class="user-info">
+      <span class="user-name">{{ session.get('faculty_name', 'Faculty') }}</span>
+      <span class="user-dept">{{ session.get('faculty_department', 'Department') }}</span>
+    </div>
+  </div>
+
+  <ul class="sidebar-nav">
+    <li class="nav-section">MAIN</li>
+    <li class="nav-item {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+      <a href="{{ url_for('dashboard.index') }}">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="nav-section">QUESTION BANK</li>
+    <li class="nav-item {% if request.endpoint == 'questions.list_questions' %}active{% endif %}">
+      <a href="{{ url_for('questions.list_questions') }}">
+        <i class="bi bi-collection"></i>
+        <span>All Questions</span>
+      </a>
+    </li>
+    <li class="nav-item {% if request.endpoint == 'questions.add_question' %}active{% endif %}">
+      <a href="{{ url_for('questions.add_question') }}">
+        <i class="bi bi-plus-circle"></i>
+        <span>Add Question</span>
+      </a>
+    </li>
+
+    <li class="nav-section">PAPERS</li>
+    <li class="nav-item {% if request.endpoint == 'papers.generate' %}active{% endif %}">
+      <a href="{{ url_for('papers.generate') }}">
+        <i class="bi bi-magic"></i>
+        <span>Generate Paper</span>
+      </a>
+    </li>
+    <li class="nav-item {% if request.endpoint == 'papers.list_papers' %}active{% endif %}">
+      <a href="{{ url_for('papers.list_papers') }}">
+        <i class="bi bi-archive"></i>
+        <span>Paper Archive</span>
+      </a>
+    </li>
+
+    <li class="nav-section">ACCOUNT</li>
+    <li class="nav-item">
+      <a href="{{ url_for('auth.logout') }}">
+        <i class="bi bi-box-arrow-left"></i>
+        <span>Logout</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <small>&copy; 2026 SmartQGen v1.0</small>
+  </div>
+</nav>

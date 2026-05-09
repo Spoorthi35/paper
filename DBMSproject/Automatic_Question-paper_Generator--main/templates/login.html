@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block unauthenticated_content %}
+<div class="login-page">
+    <div class="login-container">
+        <!-- Left Panel - Branding -->
+        <div class="login-branding">
+            <div class="brand-content">
+                <i class="bi bi-mortarboard-fill brand-logo"></i>
+                <h1>SmartQGen</h1>
+                <p class="tagline">Intelligent Internal Assessment<br>Question Paper Generator</p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Smart Question Selection</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Difficulty Balancing</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Duplicate Prevention</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>PDF Export</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Login Form -->
+        <div class="login-form-panel">
+            <div class="login-form-wrapper">
+                <h2>Welcome Back</h2>
+                <p class="text-muted">Sign in to your faculty account</p>
+
+                {% include 'partials/flash_messages.html' %}
+
+                <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm" novalidate>
+                    <div class="mb-4">
+                        <label for="email" class="form-label">
+                            <i class="bi bi-envelope me-1"></i>Email Address
+                        </label>
+                        <input type="email" class="form-control form-control-lg" id="email" name="email"
+                               placeholder="faculty@university.edu" required autocomplete="email">
+                        <div class="invalid-feedback">Please enter a valid email address.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label">
+                            <i class="bi bi-lock me-1"></i>Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password" class="form-control form-control-lg" id="password" name="password"
+                                   placeholder="Enter your password" required autocomplete="current-password">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="invalid-feedback">Please enter your password.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 login-btn">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </button>
+                </form>
+
+                <div class="demo-credentials">
+                    <p class="text-muted mb-1"><small><i class="bi bi-info-circle me-1"></i>Demo Credentials:</small></p>
+                    <code>anil.kumar@university.edu / password123</code>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

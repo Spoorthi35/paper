@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Preview Paper{% endblock %}
+{% block page_title %}Preview Generated Paper{% endblock %}
+
+{% block content %}
+<!-- Status Banner -->
+<div class="alert {% if preview.success %}alert-success{% else %}alert-warning{% endif %} d-flex align-items-center mb-4">
+    <i class="bi {% if preview.success %}bi-check-circle-fill{% else %}bi-exclamation-triangle-fill{% endif %} me-2 fs-4"></i>
+    <div>
+        <strong>{{ preview.message }}</strong>
+    </div>
+</div>
+
+<!-- Paper Summary -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-icon"><i class="bi bi-book"></i></div>
+            <div class="stat-info">
+                <h3>{{ preview.subject_name }}</h3>
+                <p>Subject</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-card-success">
+            <div class="stat-icon"><i class="bi bi-calculator"></i></div>
+            <div class="stat-info">
+                <h3>{{ preview.achieved_marks }}/{{ preview.total_marks }}</h3>
+                <p>Total Marks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-card-info">
+            <div class="stat-icon"><i class="bi bi-list-ol"></i></div>
+            <div class="stat-info">
+                <h3>{{ preview.questions|length }}</h3>
+                <p>Questions</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-card-warning">
+            <div class="stat-icon"><i class="bi bi-bar-chart"></i></div>
+            <div class="stat-info">
+                <h3>
+                    E:{{ preview.distribution.Easy }}
+                    M:{{ preview.distribution.Medium }}
+                    H:{{ preview.distribution.Hard }}
+                </h3>
+                <p>Distribution (marks)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Questions Preview -->
+<div class="card dashboard-card mb-4">
+    <div class="card-header">
+        <h5><i class="bi bi-eye me-2"></i>Selected Questions</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Question</th>
+                        <th>Module</th>
+                        <th>Marks</th>
+                        <th>Difficulty</th>
+                        <th>CO</th>
+                        <th>PO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in preview.questions %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ q.question_text }}</td>
+                        <td>M{{ q.module_number }}</td>
+                        <td><span class="badge bg-primary">{{ q.marks }}</span></td>
+                        <td><span class="badge badge-{{ q.difficulty_level|lower }}">{{ q.difficulty_level }}</span></td>
+                        <td>{{ q.co_mapping }}</td>
+                        <td>{{ q.po_mapping }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-primary">
+                        <td colspan="3"><strong>Total</strong></td>
+                        <td><strong>{{ preview.achieved_marks }}</strong></td>
+                        <td colspan="3"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Save Form -->
+<div class="card dashboard-card">
+    <div class="card-header">
+        <h5><i class="bi bi-save me-2"></i>Save Paper</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('papers.save_paper') }}" id="savePaperForm">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="exam_type" class="form-label">Exam Type</label>
+                    <select class="form-select" name="exam_type" id="exam_type" required>
+                        <option value="Internal Assessment 1">Internal Assessment 1</option>
+                        <option value="Internal Assessment 2">Internal Assessment 2</option>
+                        <option value="Internal Assessment 3">Internal Assessment 3</option>
+                        <option value="Supplementary">Supplementary</option>
+                        <option value="Practice Test">Practice Test</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="exam_date" class="form-label">Exam Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" name="exam_date" id="exam_date" required>
+                </div>
+            </div>
+
+            <div class="form-actions mt-4">
+                <a href="{{ url_for('papers.generate') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Regenerate
+                </a>
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-save me-2"></i>Save Paper
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

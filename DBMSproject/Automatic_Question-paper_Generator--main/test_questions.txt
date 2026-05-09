@@ -1,0 +1,7 @@
+This is a sample test PDF content for the question generator.
+
+1. What is a Database Management System? Explain its advantages.
+2. Differentiate between DDL and DML.
+Q3. Explain the different types of normal forms with examples.
+Q.4 Write a SQL query to find the second highest salary.
+5) Describe the ACID properties of a transaction.
