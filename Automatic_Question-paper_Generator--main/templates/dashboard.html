@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <div class="welcome-text">
+        <h2>Welcome, {{ session.get('faculty_name', 'Professor') }}! 👋</h2>
+        <p>Manage your question bank and generate intelligent assessment papers.</p>
+    </div>
+    <div class="welcome-actions">
+        <a href="{{ url_for('papers.generate') }}" class="btn btn-light btn-lg">
+            <i class="bi bi-magic me-2"></i>Generate Paper
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-icon">
+                <i class="bi bi-collection"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ total_questions }}</h3>
+                <p>Total Questions</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-card-success">
+            <div class="stat-icon">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ total_papers }}</h3>
+                <p>Generated Papers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-card-info">
+            <div class="stat-icon">
+                <i class="bi bi-book"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ total_subjects }}</h3>
+                <p>Subjects</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-card-warning">
+            <div class="stat-icon">
+                <i class="bi bi-person-check"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ my_questions }}</h3>
+                <p>My Questions</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Difficulty Distribution -->
+    <div class="col-lg-6">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5><i class="bi bi-bar-chart me-2"></i>Difficulty Distribution</h5>
+            </div>
+            <div class="card-body">
+                {% for stat in difficulty_stats %}
+                <div class="difficulty-bar-row">
+                    <div class="difficulty-label">
+                        <span class="badge badge-{{ stat.difficulty_level|lower }}">
+                            {{ stat.difficulty_level }}
+                        </span>
+                    </div>
+                    <div class="difficulty-bar-wrapper">
+                        {% set percentage = (stat.count / total_questions * 100) if total_questions > 0 else 0 %}
+                        <div class="difficulty-bar">
+                            <div class="difficulty-bar-fill difficulty-{{ stat.difficulty_level|lower }}"
+                                 style="width: {{ percentage }}%"></div>
+                        </div>
+                    </div>
+                    <span class="difficulty-count">{{ stat.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions by Subject -->
+    <div class="col-lg-6">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5><i class="bi bi-pie-chart me-2"></i>Questions by Subject</h5>
+            </div>
+            <div class="card-body">
+                {% for stat in subject_stats %}
+                <div class="subject-stat-row">
+                    <div class="subject-stat-info">
+                        <span class="subject-name">{{ stat.subject_name }}</span>
+                        <span class="subject-count">{{ stat.count }} questions</span>
+                    </div>
+                    <div class="subject-bar-wrapper">
+                        {% set max_count = subject_stats[0].count if subject_stats else 1 %}
+                        {% set pct = (stat.count / max_count * 100) if max_count > 0 else 0 %}
+                        <div class="subject-bar">
+                            <div class="subject-bar-fill" style="width: {{ pct }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Papers -->
+<div class="row g-4 mt-1">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="bi bi-clock-history me-2"></i>Recent Papers</h5>
+                <a href="{{ url_for('papers.list_papers') }}" class="btn btn-sm btn-outline-primary">
+                    View All <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_papers %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Exam Type</th>
+                                <th>Total Marks</th>
+                                <th>Date</th>
+                                <th>Generated By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for paper in recent_papers %}
+                            <tr>
+                                <td><strong>{{ paper.subject_name }}</strong></td>
+                                <td>{{ paper.exam_type }}</td>
+                                <td><span class="badge bg-primary">{{ paper.total_marks }}</span></td>
+                                <td>{{ paper.exam_date }}</td>
+                                <td>{{ paper.faculty_name }}</td>
+                                <td>
+                                    <a href="{{ url_for('papers.view_paper', paper_id=paper.paper_id) }}"
+                                       class="btn btn-sm btn-outline-primary" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('papers.download_paper', paper_id=paper.paper_id) }}"
+                                       class="btn btn-sm btn-outline-success" title="Download PDF">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-file-earmark-x"></i>
+                    <p>No papers generated yet.</p>
+                    <a href="{{ url_for('papers.generate') }}" class="btn btn-primary">
+                        <i class="bi bi-magic me-1"></i>Generate Your First Paper
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

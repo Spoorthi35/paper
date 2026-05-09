@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Question Bank{% endblock %}
+{% block page_title %}Question Bank{% endblock %}
+
+{% block content %}
+<!-- Filter Bar -->
+<div class="card filter-card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('questions.list_questions') }}" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="search" class="form-label">Search Questions</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" id="search" name="search"
+                           value="{{ filters.search }}" placeholder="Search question text...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="subject_id" class="form-label">Subject</label>
+                <select class="form-select" id="subject_id" name="subject_id">
+                    <option value="">All Subjects</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.subject_id }}"
+                            {% if filters.subject_id|string == subject.subject_id|string %}selected{% endif %}>
+                        {{ subject.subject_code }} - {{ subject.subject_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="module" class="form-label">Module</label>
+                <select class="form-select" id="module" name="module">
+                    <option value="">All Modules</option>
+                    {% for m in range(1, 7) %}
+                    <option value="{{ m }}" {% if filters.module|string == m|string %}selected{% endif %}>
+                        Module {{ m }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="difficulty" class="form-label">Difficulty</label>
+                <select class="form-select" id="difficulty" name="difficulty">
+                    <option value="">All Levels</option>
+                    <option value="Easy" {% if filters.difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+                    <option value="Medium" {% if filters.difficulty == 'Medium' %}selected{% endif %}>Medium</option>
+                    <option value="Hard" {% if filters.difficulty == 'Hard' %}selected{% endif %}>Hard</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i>Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Action Bar -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="text-muted">
+        <i class="bi bi-collection me-1"></i>
+        Showing <strong>{{ questions|length }}</strong> questions
+    </span>
+    <a href="{{ url_for('questions.add_question') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Add New Question
+    </a>
+</div>
+
+<!-- Questions Table -->
+<div class="card dashboard-card">
+    <div class="card-body p-0">
+        {% if questions %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="questionsTable">
+                <thead>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:30%">Question</th>
+                        <th>Subject</th>
+                        <th>Module</th>
+                        <th>Marks</th>
+                        <th>Difficulty</th>
+                        <th>CO</th>
+                        <th>PO</th>
+                        <th>Last Used</th>
+                        <th style="width:10%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in questions %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="question-text-cell" title="{{ q.question_text }}">
+                            {{ q.question_text[:80] }}{% if q.question_text|length > 80 %}...{% endif %}
+                        </td>
+                        <td><span class="badge bg-secondary">{{ q.subject_code }}</span></td>
+                        <td>M{{ q.module_number }}</td>
+                        <td><span class="badge bg-primary">{{ q.marks }}</span></td>
+                        <td>
+                            <span class="badge badge-{{ q.difficulty_level|lower }}">
+                                {{ q.difficulty_level }}
+                            </span>
+                        </td>
+                        <td>{{ q.co_mapping }}</td>
+                        <td>{{ q.po_mapping }}</td>
+                        <td>
+                            {% if q.last_used_date %}
+                                {{ q.last_used_date }}
+                            {% else %}
+                                <span class="text-muted">Never</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('questions.edit_question', question_id=q.question_id) }}"
+                                   class="btn btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('questions.delete_question', question_id=q.question_id) }}"
+                                      class="d-inline delete-form">
+                                    <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-collection"></i>
+            <p>No questions found matching your criteria.</p>
+            <a href="{{ url_for('questions.add_question') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Add Your First Question
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

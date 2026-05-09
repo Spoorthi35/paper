@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Generate Paper{% endblock %}
+{% block page_title %}Generate Question Paper{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5><i class="bi bi-magic me-2"></i>Paper Generation Wizard</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('papers.generate') }}"
+                      id="generatePaperForm" novalidate>
+
+                    <!-- Step 1: Subject Selection -->
+                    <div class="wizard-step">
+                        <h6 class="step-title"><span class="step-num">1</span> Select Subject</h6>
+                        <div class="mb-3">
+                            <select class="form-select form-select-lg" id="subject_id" name="subject_id" required>
+                                <option value="">Choose a subject...</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.subject_id }}"
+                                        {% if form_data.get('subject_id')|string == subject.subject_id|string %}selected{% endif %}>
+                                    {{ subject.subject_code }} - {{ subject.subject_name }} (Sem {{ subject.semester }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Paper Configuration -->
+                    <div class="wizard-step">
+                        <h6 class="step-title"><span class="step-num">2</span> Paper Configuration</h6>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Total Marks</label>
+                                <div class="marks-selector">
+                                    {% for m in [20, 30, 50] %}
+                                    <label class="marks-option">
+                                        <input type="radio" name="total_marks" value="{{ m }}"
+                                               {% if form_data.get('total_marks')|string == m|string %}checked{% endif %}
+                                               {% if m == 30 and not form_data.get('total_marks') %}checked{% endif %}
+                                               required>
+                                        <span class="marks-label">{{ m }}<small> marks</small></span>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Module Selection -->
+                    <div class="wizard-step">
+                        <h6 class="step-title"><span class="step-num">3</span> Select Modules</h6>
+                        <div class="module-selector" id="moduleSelector">
+                            <p class="text-muted" id="moduleHint">Select a subject first to see available modules.</p>
+                            {% for m in range(1, 7) %}
+                            <label class="module-option" id="moduleOption{{ m }}" style="display:none;">
+                                <input type="checkbox" name="modules" value="{{ m }}"
+                                       {% if form_data.getlist and m|string in form_data.getlist('modules') %}checked{% endif %}>
+                                <span class="module-label">
+                                    <i class="bi bi-journal-text"></i>
+                                    Module {{ m }}
+                                </span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Difficulty Distribution -->
+                    <div class="wizard-step">
+                        <h6 class="step-title"><span class="step-num">4</span> Difficulty Distribution</h6>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <span class="badge badge-easy me-1">Easy</span> Percentage
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="easy_pct" id="easy_pct"
+                                           value="{{ form_data.get('easy_pct', 30) }}" min="0" max="100">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <span class="badge badge-medium me-1">Medium</span> Percentage
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="medium_pct" id="medium_pct"
+                                           value="{{ form_data.get('medium_pct', 50) }}" min="0" max="100">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <span class="badge badge-hard me-1">Hard</span> Percentage
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="hard_pct" id="hard_pct"
+                                           value="{{ form_data.get('hard_pct', 20) }}" min="0" max="100">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">Total must equal 100%. Current total:
+                                <strong id="totalPct">100</strong>%
+                                <span id="pctStatus" class="ms-1"></span>
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="form-actions mt-4">
+                        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>Back
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-magic me-2"></i>Generate Paper
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Edit Question{% endblock %}
+{% block page_title %}Edit Question{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5><i class="bi bi-pencil-square me-2"></i>Edit Question #{{ question.question_id }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('questions.edit_question', question_id=question.question_id) }}"
+                      id="editQuestionForm" novalidate>
+
+                    {% set data = form_data if form_data.get('subject_id') else question %}
+
+                    <!-- Subject -->
+                    <div class="mb-3">
+                        <label for="subject_id" class="form-label">Subject <span class="text-danger">*</span></label>
+                        <select class="form-select" id="subject_id" name="subject_id" required>
+                            <option value="">Select Subject</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.subject_id }}"
+                                    {% if data.get('subject_id')|string == subject.subject_id|string %}selected{% endif %}>
+                                {{ subject.subject_code }} - {{ subject.subject_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div class="mb-3">
+                        <label for="question_text" class="form-label">Question Text <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="question_text" name="question_text"
+                                  rows="4" required>{{ data.get('question_text', '') }}</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="module_number" class="form-label">Module <span class="text-danger">*</span></label>
+                            <select class="form-select" id="module_number" name="module_number" required>
+                                {% for m in range(1, 7) %}
+                                <option value="{{ m }}"
+                                        {% if data.get('module_number')|string == m|string %}selected{% endif %}>
+                                    Module {{ m }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="marks" class="form-label">Marks <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="marks" name="marks"
+                                   min="1" max="20" required value="{{ data.get('marks', '') }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="difficulty_level" class="form-label">Difficulty <span class="text-danger">*</span></label>
+                            <select class="form-select" id="difficulty_level" name="difficulty_level" required>
+                                <option value="Easy" {% if data.get('difficulty_level') == 'Easy' %}selected{% endif %}>Easy</option>
+                                <option value="Medium" {% if data.get('difficulty_level') == 'Medium' %}selected{% endif %}>Medium</option>
+                                <option value="Hard" {% if data.get('difficulty_level') == 'Hard' %}selected{% endif %}>Hard</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="co_mapping" class="form-label">CO Mapping <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="co_mapping" name="co_mapping"
+                                   required value="{{ data.get('co_mapping', '') }}"
+                                   placeholder="e.g., CO1, CO2">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="po_mapping" class="form-label">PO Mapping <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="po_mapping" name="po_mapping"
+                                   required value="{{ data.get('po_mapping', '') }}"
+                                   placeholder="e.g., PO1, PO3">
+                        </div>
+                    </div>
+
+                    {% if question.last_used_date %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-1"></i>
+                        This question was last used on <strong>{{ question.last_used_date }}</strong>.
+                    </div>
+                    {% endif %}
+
+                    <div class="form-actions">
+                        <a href="{{ url_for('questions.list_questions') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>Update Question
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
